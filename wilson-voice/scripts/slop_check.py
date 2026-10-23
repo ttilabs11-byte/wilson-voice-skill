@@ -87,6 +87,11 @@ def check(text: str, mode: str) -> list[tuple[str, str]]:
             out.append(("FAIL", "no bold verdict in the first three sentences"))
     if mode == "summary" and not re.search(r"[\"“][^\"”\n]{3,90}[\"”]", text):
         out.append(("WARN", "no verbatim quote from the source; borrowed wit is the best wit"))
+    if mode == "summary":
+        own = re.sub(r"[\"“][^\"”\n]*[\"”]", "", text)
+        addr = re.findall(r"\b(you|your|y'all|folks|we|us)\b|, OP\b|\bOP[,.!?]", own, re.I)
+        if len(addr) < 2:
+            out.append(("WARN", f"{len(addr)} direct addresses (you, OP, we); talk to the room, don't report on it"))
     return out
 
 
